@@ -1,0 +1,29 @@
+name: Build and Push Container Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: ["lua", "pytest", "yarn"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Use Podman Build and Push Action
+        uses: Frozen-Tapestry/container-action@v1.4.0
+        with:
+          login_registry: ghcr.io
+          login_username: ${{ secrets.REGISTRY_USERNAME }}
+          login_password: ${{ secrets.REGISTRY_PASSWORD }}
+          build_args: target=${{ matrix.target }}
+          tags: ghcr.io/marek629/kiro-cli:${{ matrix.target }}
+          dockerfile: .
+          push: true
