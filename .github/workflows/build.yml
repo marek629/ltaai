@@ -3,7 +3,7 @@ name: Build and Push Container Image
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-push:
@@ -13,17 +13,36 @@ jobs:
       matrix:
         target: ["lua", "pytest", "yarn"]
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v5
 
-      - name: Use Podman Build and Push Action
-        uses: Frozen-Tapestry/container-action@v1.4.0
-        with:
-          login_registry: ghcr.io
-          login_username: ${{ secrets.REGISTRY_USERNAME }}
-          login_password: ${{ secrets.REGISTRY_PASSWORD }}
-          build_args: target=${{ matrix.target }}
-          tags: ghcr.io/marek629/kiro-cli:${{ matrix.target }}
-          dockerfile: .
-          push: true
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y podman
+
+      - name: Configure Podman storage (vfs)
+        run: |
+          mkdir -p ~/.config/containers
+          echo -e "[storage]\ndriver = \"vfs\"" > ~/.config/containers/storage.conf
+
+      - name: Log in to GHCR
+        run: |
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | podman login ghcr.io \
+            --username marek629 \
+            --password-stdin
+
+      - name: Build image
+        run: |
+          podman build \
+            --build-arg target=${{ matrix.target }} \
+            -t ghcr.io/marek629/kiro-cli:${{ matrix.target }} .
+
+      - name: Push image
+        run: |
+          podman push ghcr.io/marek629/kiro-cli:${{ matrix.target }}
