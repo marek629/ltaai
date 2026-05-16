@@ -1,0 +1,43 @@
+x-common: &kiro
+  volumes:
+    - .:/home/ubuntu/workspace:Z
+    - ${HOME}/${CLIDIR}:/root/${CLIDIR}:Z
+    - ${HOME}/.kiro:/root/.kiro:Z
+  working_dir: /home/ubuntu/workspace
+  stdin_open: true
+  tty: true
+  user: root
+  pull_policy: missing
+
+services:
+  doctor:
+    extends: yarn
+    command: ["doctor", "--all"]
+  login:
+    extends: yarn
+    command: ["login", "--use-device-flow"]
+
+  lua:
+    <<: *kiro
+    build:
+      context: .
+      args:
+        target: lua
+    image: ghcr.io/marek629/kiro-cli:lua
+
+  pytest:
+    <<: *kiro
+    build:
+      context: .
+      args:
+        target: pytest
+    image: ghcr.io/marek629/kiro-cli:pytest
+
+  yarn:
+    <<: *kiro
+    build:
+      context: .
+      args:
+        target: yarn
+    image: ghcr.io/marek629/kiro-cli:yarn
+    command: ["--agent", "js-developer"]
