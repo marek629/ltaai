@@ -13,6 +13,9 @@ ARG target
 RUN set -eux; \
     echo "Setting up ${target} environment..."; \
     case "$target" in \
+        catch2) \
+            apt-get install -y catch2 cmake g++; \
+            ;; \
         lua) \
             apt-get install -y --no-install-recommends lua5.5 luarocks; \
             ;; \

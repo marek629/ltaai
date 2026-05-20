@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        target: ["lua", "pytest", "yarn"]
+        target: ["catch2", "lua", "pytest", "yarn"]
 
     permissions:
       contents: read

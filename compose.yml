@@ -17,6 +17,14 @@ services:
     extends: yarn
     command: ["login", "--use-device-flow"]
 
+  catch2:
+    <<: *kiro
+    build:
+      context: .
+      args:
+        target: catch2
+    image: ghcr.io/marek629/kiro-cli:catch2
+
   lua:
     <<: *kiro
     build:
