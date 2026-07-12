@@ -24,6 +24,7 @@ services:
       args:
         target: catch2
     image: ghcr.io/marek629/kiro-cli:catch2
+    command: ["--agent", "c++-developer"]
 
   lua:
     <<: *kiro

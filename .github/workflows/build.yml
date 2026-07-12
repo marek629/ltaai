@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        target: ["catch2", "lua", "pytest", "yarn"]
+        target: ["catch2", "pytest", "yarn"]
 
     permissions:
       contents: read
@@ -41,8 +41,14 @@ jobs:
         run: |
           podman build \
             --build-arg target=${{ matrix.target }} \
+            --target kiro \
             -t ghcr.io/marek629/kiro-cli:${{ matrix.target }} .
+          podman build \
+            --build-arg target=${{ matrix.target }} \
+            --target opencode \
+            -t ghcr.io/marek629/opencode:${{ matrix.target }} .
 
       - name: Push image
         run: |
           podman push ghcr.io/marek629/kiro-cli:${{ matrix.target }}
+          podman push ghcr.io/marek629/opencode:${{ matrix.target }}
