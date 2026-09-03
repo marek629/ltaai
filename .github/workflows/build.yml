@@ -1,6 +1,8 @@
 name: Build and Push Container Image
 
 on:
+  schedule:
+    - cron: "20 10 2 */2 *"
   push:
     branches:
       - master
